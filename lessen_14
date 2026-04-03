@@ -1,0 +1,19 @@
+import java.util.Arrays;
+
+public class Main {
+    public static int[] fillArray(int len, int initialValue) {
+        int[] array = new int[len];
+
+        for (int i = 0; i < array.length; i++) {
+            array[i] = initialValue;
+        }
+
+        return array;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(Arrays.toString(fillArray(5, 3)));
+        System.out.println(Arrays.toString(fillArray(7, 0)));
+        System.out.println(Arrays.toString(fillArray(4, -2)));
+    }
+}
