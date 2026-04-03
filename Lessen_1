@@ -1,0 +1,7 @@
+function printThreeWords() {
+    console.log("Orange");
+    console.log("Banana");
+    console.log("Apple");
+}
+
+printThreeWords();
