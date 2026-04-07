@@ -1,0 +1,45 @@
+public class Product {
+
+    private String name;               // Название
+    private String productionDate;     // Дата производства
+    private String manufacturer;       // Производитель
+    private String countryOfOrigin;    // Страна происхождения
+    private double price;              // Цена
+    private boolean isReserved;        // Состояние бронирования
+
+    // Конструктор
+    public Product(String name, String productionDate, String manufacturer,
+                   String countryOfOrigin, double price, boolean isReserved) {
+        this.name = name;
+        this.productionDate = productionDate;
+        this.manufacturer = manufacturer;
+        this.countryOfOrigin = countryOfOrigin;
+        this.price = price;
+        this.isReserved = isReserved;
+    }
+
+    // Метод вывода информации об объекте в консоль
+    public void printInfo() {
+        System.out.println("=== Информация о товаре ===");
+        System.out.println("Название:            " + name);
+        System.out.println("Дата производства:   " + productionDate);
+        System.out.println("Производитель:       " + manufacturer);
+        System.out.println("Страна происхождения:" + countryOfOrigin);
+        System.out.println("Цена:                " + price + " руб.");
+        System.out.println("Забронирован:        " + (isReserved ? "Да" : "Нет"));
+    }
+
+    // Точка входа — пример использования
+    public static void main(String[] args) {
+        Product product = new Product(
+            "Ноутбук Lenovo IdeaPad",
+            "2024-03-15",
+            "Lenovo",
+            "Китай",
+            75000.0,
+            false
+        );
+
+        product.printInfo();
+    }
+}
