@@ -1,0 +1,108 @@
+public class ArrayProcessor {
+
+    // 1. Собственное исключение для неправильного размера массива
+    static class MyArraySizeException extends Exception {
+        public MyArraySizeException(String message) {
+            super(message);
+        }
+    }
+
+    // 2. Собственное исключение для ошибки преобразования данных
+    static class MyArrayDataException extends Exception {
+        private final int row;
+        private final int col;
+
+        public MyArrayDataException(int row, int col, String value) {
+            super(String.format("Не удалось преобразовать '%s' в int в ячейке [%d][%d]", value, row, col));
+            this.row = row;
+            this.col = col;
+        }
+
+        public int getRow() { return row; }
+        public int getCol() { return col; }
+    }
+
+    /**
+     * Обрабатывает двумерный массив строк 4x4, суммирует целые числа.
+     * @param arr двумерный массив строк
+     * @return сумма всех элементов, преобразованных в int
+     * @throws MyArraySizeException если размеры массива не 4x4
+     * @throws MyArrayDataException если элемент не является целым числом
+     */
+    public static int processArray(String[][] arr) throws MyArraySizeException, MyArrayDataException {
+        // Проверка размера массива
+        if (arr == null || arr.length != 4) {
+            throw new MyArraySizeException("Массив должен быть размером 4x4. Получено строк: " + (arr == null ? "null" : arr.length));
+        }
+        for (int i = 0; i < 4; i++) {
+            if (arr[i] == null || arr[i].length != 4) {
+                throw new MyArraySizeException("Массив должен быть размером 4x4. В строке " + i + " столбцов: " + (arr[i] == null ? "null" : arr[i].length));
+            }
+        }
+
+        int sum = 0;
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                try {
+                    sum += Integer.parseInt(arr[i][j]);
+                } catch (NumberFormatException e) {
+                    throw new MyArrayDataException(i, j, arr[i][j]);
+                }
+            }
+        }
+        return sum;
+    }
+
+    public static void main(String[] args) {
+        // Демонстрация работы с корректным массивом
+        String[][] correctArray = {
+                {"1", "2", "3", "4"},
+                {"5", "6", "7", "8"},
+                {"9", "10", "11", "12"},
+                {"13", "14", "15", "16"}
+        };
+        try {
+            int sum = processArray(correctArray);
+            System.out.println("Сумма элементов корректного массива: " + sum);
+        } catch (MyArraySizeException | MyArrayDataException e) {
+            System.err.println("Ошибка: " + e.getMessage());
+        }
+
+        // Массив неправильного размера
+        String[][] wrongSizeArray = new String[3][4];
+        try {
+            processArray(wrongSizeArray);
+        } catch (MyArraySizeException e) {
+            System.err.println("Перехвачено MyArraySizeException: " + e.getMessage());
+        } catch (MyArrayDataException e) {
+            System.err.println("Перехвачено MyArrayDataException: " + e.getMessage());
+        }
+
+        // Массив с некорректными данными
+        String[][] invalidDataArray = {
+                {"1", "2", "3", "4"},
+                {"5", "6", "7", "8"},
+                {"9", "10", "abc", "12"},
+                {"13", "14", "15", "16"}
+        };
+        try {
+            processArray(invalidDataArray);
+        } catch (MyArraySizeException e) {
+            System.err.println("Перехвачено MyArraySizeException: " + e.getMessage());
+        } catch (MyArrayDataException e) {
+            System.err.println("Перехвачено MyArrayDataException: " + e.getMessage());
+            System.out.println("Строка с ошибкой: " + e.getRow() + ", столбец: " + e.getCol());
+        }
+
+        // 4. Генерация и перехват ArrayIndexOutOfBoundsException
+        System.out.println("\n--- Демонстрация ArrayIndexOutOfBoundsException ---");
+        try {
+            int[] array = {1, 2, 3};
+            System.out.println(array[5]); // выход за границы
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.err.println("Поймано ArrayIndexOutOfBoundsException: " + e.getMessage());
+            // Можно вывести стек-трейс для отладки:
+            // e.printStackTrace();
+        }
+    }
+}
