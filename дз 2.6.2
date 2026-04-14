@@ -1,0 +1,24 @@
+
+
+    
+       PhoneBook phoneBook = new PhoneBook();
+        phoneBook.add("Иванов", "+7-123-456-78-90");
+        phoneBook.add("Петров", "+7-987-654-32-10");
+        phoneBook.add("Иванов", "+7-111-222-33-44"); // второй номер у Иванова
+        phoneBook.add("Сидорова", "+7-555-666-77-88");
+
+        System.out.println("Телефонный справочник:");
+        phoneBook.printAll();
+
+        System.out.println("\nПоиск телефонов по фамилии 'Иванов':");
+        List<String> phones = phoneBook.get("Иванов");
+        if (phones.isEmpty()) {
+            System.out.println("Нет записей.");
+        } else {
+            phones.forEach(System.out::println);
+        }
+
+        System.out.println("\nПоиск по фамилии 'Кузнецов' (нет записей):");
+        System.out.println(phoneBook.get("Кузнецов")); // пустой список
+    }
+}
