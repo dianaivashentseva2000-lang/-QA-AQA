@@ -1,0 +1,94 @@
+import pytest
+from pages.mts_main_page import MtsMainPage
+from pages.payment_frame_page import PaymentFramePage
+
+
+PHONE  = "297777777"   # пререквизиты из предыдущей темы
+AMOUNT = "100"
+
+
+@pytest.mark.usefixtures("driver")
+class TestOnlinePayment:
+
+    # ------------------------------------------------------------------ #
+    #  1. Плейсхолдеры незаполненных полей для всех вариантов оплаты      #
+    # ------------------------------------------------------------------ #
+
+    def test_services_placeholders(self, driver):
+        page = MtsMainPage(driver).open()
+        assert page.get_services_phone_placeholder() == "Номер телефона", \
+            "Неверный плейсхолдер поля «Номер телефона» (Услуги связи)"
+        assert page.get_services_sum_placeholder() == "Сумма", \
+            "Неверный плейсхолдер поля «Сумма» (Услуги связи)"
+        assert page.get_services_email_placeholder() == "E-mail для отправки чека", \
+            "Неверный плейсхолдер поля «E-mail» (Услуги связи)"
+
+    def test_internet_placeholders(self, driver):
+        page = MtsMainPage(driver)
+        assert page.get_internet_phone_placeholder() == "Номер абонента", \
+            "Неверный плейсхолдер поля «Номер абонента» (Домашний интернет)"
+        assert page.get_internet_sum_placeholder() == "Сумма", \
+            "Неверный плейсхолдер поля «Сумма» (Домашний интернет)"
+        assert page.get_internet_email_placeholder() == "E-mail для отправки чека", \
+            "Неверный плейсхолдер поля «E-mail» (Домашний интернет)"
+
+    def test_instalment_placeholders(self, driver):
+        page = MtsMainPage(driver)
+        assert page.get_instalment_num_placeholder() == "Номер счёта на 44", \
+            "Неверный плейсхолдер поля «Номер счёта» (Рассрочка)"
+        assert page.get_instalment_sum_placeholder() == "Сумма", \
+            "Неверный плейсхолдер поля «Сумма» (Рассрочка)"
+        assert page.get_instalment_email_placeholder() == "E-mail для отправки чека", \
+            "Неверный плейсхолдер поля «E-mail» (Рассрочка)"
+
+    def test_debt_placeholders(self, driver):
+        page = MtsMainPage(driver)
+        assert page.get_debt_num_placeholder() == "Номер счёта на 2073", \
+            "Неверный плейсхолдер поля «Номер счёта» (Задолженность)"
+        assert page.get_debt_sum_placeholder() == "Сумма", \
+            "Неверный плейсхолдер поля «Сумма» (Задолженность)"
+        assert page.get_debt_email_placeholder() == "E-mail для отправки чека", \
+            "Неверный плейсхолдер поля «E-mail» (Задолженность)"
+
+    # ------------------------------------------------------------------ #
+    #  2. Проверки платёжного виджета после заполнения формы              #
+    # ------------------------------------------------------------------ #
+
+    def test_payment_widget(self, driver):
+        main_page = MtsMainPage(driver).open()
+        main_page.fill_services_form(phone=PHONE, amount=AMOUNT)
+        main_page.submit_services_form()
+
+        frame_page = PaymentFramePage(driver)
+        frame_page.switch_to_frame()
+
+        # --- Сумма ---
+        displayed_amount = frame_page.get_displayed_amount()
+        assert AMOUNT in displayed_amount, \
+            f"Сумма в виджете '{displayed_amount}' не содержит '{AMOUNT}'"
+
+        # --- Сумма на кнопке «Продолжить» ---
+        btn_text = frame_page.get_continue_button_text()
+        assert AMOUNT in btn_text, \
+            f"Сумма на кнопке '{btn_text}' не содержит '{AMOUNT}'"
+
+        # --- Номер телефона ---
+        displayed_phone = frame_page.get_displayed_phone()
+        assert PHONE in displayed_phone.replace(" ", "").replace("-", ""), \
+            f"Номер телефона в виджете '{displayed_phone}' не содержит '{PHONE}'"
+
+        # --- Плейсхолдеры полей карты ---
+        assert frame_page.get_card_number_placeholder() == "Номер карты", \
+            "Неверный плейсхолдер поля «Номер карты»"
+        assert frame_page.get_card_expiry_placeholder() == "Срок действия", \
+            "Неверный плейсхолдер поля «Срок действия»"
+        assert frame_page.get_card_cvc_placeholder() == "CVC", \
+            "Неверный плейсхолдер поля «CVC»"
+        assert frame_page.get_card_name_placeholder() == "Имя держателя (как на карте)", \
+            "Неверный плейсхолдер поля «Имя держателя»"
+
+        # --- Иконки платёжных систем ---
+        icons = frame_page.get_payment_icons()
+        assert len(icons) > 0, "Иконки платёжных систем не найдены в виджете"
+
+        frame_page.switch_to_default()
