@@ -1,0 +1,45 @@
+import requests
+
+def check_website_status(url):
+    try:
+        response = requests.get(url, timeout=10)
+        if response.status_code == 200:
+            print(f"✅ Сайт {url} доступен. Код ответа: {response.status_code}")
+            return True
+        else:
+            print(f"⚠️ Сайт {url} вернул код: {response.status_code}")
+            return False
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Ошибка при проверке {url}: {e}")
+        return False
+
+# Пример использования
+check_website_status("https://example.
+import requests
+import time
+
+def detailed_website_check(url):
+    start_time = time.time()
+    try:
+        response = requests.get(url, timeout=10)
+        load_time = round(time.time() - start_time, 2)
+        page_size = len(response.content) / 1024  # в КБ
+
+        print(f"🔎 Проверка: {url}")
+        print(f"  Статус: {response.status_code}")
+        print(f"  Время загрузки: {load_time} сек")
+        print(f"  Размер страницы: {page_size:.2f} КБ")
+        print(f"  URL после редиректов: {response.url}")
+
+        if response.status_code == 200:
+            print("✅ Сайт работает корректно")
+            return True
+        else:
+            print("❌ Проблемы с сайтом")
+            return False
+    except Exception as e:
+        print(f"❌ Критическая ошибка: {e}")
+        return False
+
+# Пример использования
+detailed_website_check("https://example.com")
